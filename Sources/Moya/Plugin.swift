@@ -1,4 +1,5 @@
 import Foundation
+import Alamofire
 
 /// A Moya Plugin receives callbacks to perform side effects wherever a request is sent or received.
 ///
@@ -8,7 +9,7 @@ import Foundation
 ///     - inject additional information into a request
 public protocol PluginType {
     /// Called to modify a request before sending.
-    func prepare(_ request: URLRequest, target: TargetType) -> URLRequest
+    func prepare(_ request: URLRequest, uploadable: UploadRequest.Uploadable?, target: TargetType) -> URLRequest
 
     /// Called immediately before a request is sent over the network (or stubbed).
     func willSend(_ request: RequestType, target: TargetType)
@@ -21,7 +22,7 @@ public protocol PluginType {
 }
 
 public extension PluginType {
-    func prepare(_ request: URLRequest, target: TargetType) -> URLRequest { request }
+    func prepare(_ request: URLRequest, uploadable: UploadRequest.Uploadable?, target: TargetType) -> URLRequest { request }
     func willSend(_ request: RequestType, target: TargetType) { }
     func didReceive(_ result: Result<Moya.Response, MoyaError>, target: TargetType) { }
     func process(_ result: Result<Moya.Response, MoyaError>, target: TargetType) -> Result<Moya.Response, MoyaError> { result }

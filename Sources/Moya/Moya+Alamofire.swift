@@ -4,7 +4,7 @@ import Alamofire
 public typealias Session = Alamofire.Session
 internal typealias Request = Alamofire.Request
 internal typealias DownloadRequest = Alamofire.DownloadRequest
-internal typealias UploadRequest = Alamofire.UploadRequest
+public typealias UploadRequest = Alamofire.UploadRequest
 internal typealias DataRequest = Alamofire.DataRequest
 
 internal typealias URLRequestConvertible = Alamofire.URLRequestConvertible
@@ -107,18 +107,18 @@ extension DownloadRequest: Requestable {
 }
 
 final class MoyaRequestInterceptor: RequestInterceptor {
-    var prepare: ((URLRequest) -> URLRequest)?
+    var prepare: ((URLRequest, UploadRequest.Uploadable?) -> URLRequest)?
 
     @Atomic
     var willSend: ((URLRequest) -> Void)?
 
-    init(prepare: ((URLRequest) -> URLRequest)? = nil, willSend: ((URLRequest) -> Void)? = nil) {
+    init(prepare: ((URLRequest, UploadRequest.Uploadable?) -> URLRequest)? = nil, willSend: ((URLRequest) -> Void)? = nil) {
         self.prepare = prepare
         self.willSend = willSend
     }
 
-    func adapt(_ urlRequest: URLRequest, for session: Alamofire.Session, completion: @escaping (Result<URLRequest, Error>) -> Void) {
-        let request = prepare?(urlRequest) ?? urlRequest
+    func adapt(_ urlRequest: URLRequest, uploadable: UploadRequest.Uploadable?, for session: Alamofire.Session, completion: @escaping (Result<URLRequest, Error>) -> Void) {
+        let request = prepare?(urlRequest, uploadable) ?? urlRequest
         willSend?(request)
         completion(.success(request))
     }

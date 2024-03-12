@@ -154,7 +154,7 @@ public extension MoyaProvider {
         let alamoRequest = session.request(request)
         alamoRequest.cancel()
 
-        let preparedRequest = plugins.reduce(request) { $1.prepare($0, target: target) }
+        let preparedRequest = plugins.reduce(request) { $1.prepare($0, uploadable: nil, target: target) }
 
         let stubbedAlamoRequest = RequestTypeWrapper(request: alamoRequest, urlRequest: preparedRequest)
         plugins.forEach { $0.willSend(stubbedAlamoRequest, target: target) }
@@ -165,8 +165,8 @@ public extension MoyaProvider {
 
 private extension MoyaProvider {
     private func interceptor(target: Target) -> MoyaRequestInterceptor {
-        return MoyaRequestInterceptor(prepare: { [weak self] urlRequest in
-            return self?.plugins.reduce(urlRequest) { $1.prepare($0, target: target) } ?? urlRequest
+        return MoyaRequestInterceptor(prepare: { [weak self] (urlRequest, uploadable) in
+            return self?.plugins.reduce(urlRequest) { $1.prepare($0, uploadable: uploadable, target: target) } ?? urlRequest
        })
     }
 
